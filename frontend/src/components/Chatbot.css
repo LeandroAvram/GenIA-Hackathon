@@ -11,7 +11,7 @@
 }
 
 .chat-header {
-  background: linear-gradient(135deg, #0066cc, #004499);
+  background: linear-gradient(135deg, #00BFFF, #0099CC);
   color: white;
   padding: 24px;
   text-align: center;
@@ -71,7 +71,7 @@
 }
 
 .message.bot .message-avatar {
-  background: linear-gradient(135deg, #0066cc, #004499);
+  background: linear-gradient(135deg, #00BFFF, #0099CC);
   color: white;
 }
 
@@ -90,7 +90,7 @@
 }
 
 .message.user .message-bubble {
-  background: linear-gradient(135deg, #0066cc, #004499);
+  background: linear-gradient(135deg, #00BFFF, #0099CC);
   color: white;
 }
 
@@ -116,7 +116,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #0066cc;
+  background: #00BFFF;
   animation: typing 1.4s infinite ease-in-out;
 }
 
@@ -156,7 +156,7 @@
 
 .record-button:hover {
   background: #e9ecef;
-  border-color: #0066cc;
+  border-color: #00BFFF;
 }
 
 .record-button.recording {
@@ -198,7 +198,7 @@
 }
 
 .send-audio-button {
-  color: #0066cc;
+  color: #00BFFF;
 }
 
 .input-container textarea {
@@ -215,15 +215,15 @@
 }
 
 .input-container textarea:focus {
-  border-color: #0066cc;
-  box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+  border-color: #00BFFF;
+  box-shadow: 0 0 0 3px rgba(0,191,255,0.1);
 }
 
 .send-button {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0066cc, #004499);
+  background: linear-gradient(135deg, #00BFFF, #0099CC);
   color: white;
   border: none;
   font-size: 20px;
@@ -232,12 +232,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 15px rgba(0,102,204,0.3);
+  box-shadow: 0 4px 15px rgba(0,191,255,0.3);
 }
 
 .send-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,102,204,0.4);
+  box-shadow: 0 6px 20px rgba(0,191,255,0.4);
 }
 
 .send-button:disabled {
