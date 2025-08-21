@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import './Chatbot.css'
 
 function Chatbot() {
@@ -12,8 +12,12 @@ function Chatbot() {
   ])
   const [inputText, setInputText] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
+  const [audioBlob, setAudioBlob] = useState(null)
+  const mediaRecorderRef = useRef(null)
+  const audioRef = useRef(null)
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!inputText.trim()) return
 
     const userMessage = {
@@ -24,26 +28,117 @@ function Chatbot() {
     }
 
     setMessages(prev => [...prev, userMessage])
+    const currentInput = inputText
     setInputText('')
     setIsTyping(true)
 
-    // Simular respuesta del bot
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: currentInput })
+      })
+      
+      const data = await response.json()
+      
       const botMessage = {
         id: Date.now() + 1,
         type: 'bot',
-        content: 'Gracias por tu consulta. Estoy procesando tu solicitud...',
+        content: data.response || 'Error en la respuesta',
         timestamp: new Date()
       }
       setMessages(prev => [...prev, botMessage])
-      setIsTyping(false)
-    }, 1500)
+    } catch (error) {
+      const errorMessage = {
+        id: Date.now() + 1,
+        type: 'bot',
+        content: 'Error de conexión. Intenta nuevamente.',
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, errorMessage])
+    }
+    
+    setIsTyping(false)
   }
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       sendMessage()
+    }
+  }
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const mediaRecorder = new MediaRecorder(stream)
+      mediaRecorderRef.current = mediaRecorder
+      
+      const chunks = []
+      mediaRecorder.ondataavailable = (e) => chunks.push(e.data)
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/wav' })
+        setAudioBlob(blob)
+        stream.getTracks().forEach(track => track.stop())
+      }
+      
+      mediaRecorder.start()
+      setIsRecording(true)
+    } catch (error) {
+      console.error('Error accessing microphone:', error)
+    }
+  }
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop()
+      setIsRecording(false)
+    }
+  }
+
+  const playAudio = () => {
+    if (audioBlob && audioRef.current) {
+      audioRef.current.src = URL.createObjectURL(audioBlob)
+      audioRef.current.play()
+    }
+  }
+
+  const clearAudio = () => {
+    setAudioBlob(null)
+    if (audioRef.current) {
+      audioRef.current.src = ''
+    }
+  }
+
+  const sendAudio = async () => {
+    if (!audioBlob) return
+    
+    const formData = new FormData()
+    formData.append('audio', audioBlob, 'recording.wav')
+    
+    try {
+      const response = await fetch('/api/audio', {
+        method: 'POST',
+        body: formData
+      })
+      
+      const data = await response.json()
+      console.log('Audio enviado:', data)
+      
+      // Mostrar mensaje de confirmación
+      const confirmMessage = {
+        id: Date.now(),
+        type: 'bot',
+        content: `Audio recibido y guardado como: ${data.filename}`,
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, confirmMessage])
+      
+      clearAudio()
+    } catch (error) {
+      console.error('Error enviando audio:', error)
     }
   }
 
@@ -93,7 +188,22 @@ function Chatbot() {
       </div>
 
       <div className="chat-input">
+        {audioBlob && (
+          <div className="audio-preview">
+            <audio ref={audioRef} />
+            <button onClick={playAudio} className="play-button">▶️</button>
+            <span>Audio grabado</span>
+            <button onClick={sendAudio} className="send-audio-button">📤</button>
+            <button onClick={clearAudio} className="clear-button">❌</button>
+          </div>
+        )}
         <div className="input-container">
+          <button 
+            onClick={isRecording ? stopRecording : startRecording}
+            className={`record-button ${isRecording ? 'recording' : ''}`}
+          >
+            {isRecording ? '⏹️' : '🎤'}
+          </button>
           <textarea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}

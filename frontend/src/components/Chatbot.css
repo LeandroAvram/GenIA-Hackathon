@@ -136,8 +136,69 @@
 
 .input-container {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: flex-end;
+}
+
+.record-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s;
+}
+
+.record-button:hover {
+  background: #e9ecef;
+  border-color: #0066cc;
+}
+
+.record-button.recording {
+  background: #ff4444;
+  border-color: #ff4444;
+  color: white;
+  animation: pulse-red 1s infinite;
+}
+
+@keyframes pulse-red {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.audio-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.play-button, .clear-button, .send-audio-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.play-button:hover, .clear-button:hover, .send-audio-button:hover {
+  background: #e9ecef;
+}
+
+.send-audio-button {
+  color: #0066cc;
 }
 
 .input-container textarea {
